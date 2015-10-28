@@ -1,0 +1,67 @@
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\RecognitionHand.exe.config
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\RecognitionHand.exe
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\RecognitionHand.pdb
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Microsoft.Research.Kinect.dll
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Microsoft.Expression.Drawing.dll
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csproj.RecognitionHand.exe.config
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\MainWindow.g.cs
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\App.g.cs
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand_MarkupCompile.cache
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand_MarkupCompile.lref
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\MainWindow.baml
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.g.resources
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.Properties.Resources.resources
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csproj.GenerateResource.Cache
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.exe
+c:\users\utente\documents\visual studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.pdb
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\RecognitionHand.exe.config
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.exe
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.pdb
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\RecognitionHand.exe
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\RecognitionHand.pdb
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Microsoft.Research.Kinect.dll
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Microsoft.Expression.Drawing.dll
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csproj.RecognitionHand.exe.config
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\MainWindow.g.cs
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\App.g.cs
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand_MarkupCompile.cache
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand_MarkupCompile.lref
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\MainWindow.baml
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.g.resources
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.Properties.Resources.resources
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csproj.GenerateResource.Cache
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Emgu.CV.dll
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Emgu.CV.UI.dll
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Emgu.Util.dll
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Coding4Fun.Kinect.Wpf.dll
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Coding4Fun.Kinect.Wpf.pdb
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand_Content.g.cs
+C:\Users\Utente\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand_Content.g.cs
+C:\Users\Utente\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Emgu.CV.dll
+C:\Users\Utente\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Emgu.CV.UI.dll
+C:\Users\Utente\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Emgu.Util.dll
+C:\Users\Utente\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Microsoft.Expression.Drawing.xml
+C:\Users\Utente\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csprojResolveAssemblyReference.cache
+C:\Users\Francesco\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csprojResolveAssemblyReference.cache
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\bin\Debug\RecognitionHand.exe.config
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.exe
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.pdb
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\bin\Debug\RecognitionHand.exe
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\bin\Debug\RecognitionHand.pdb
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\bin\Debug\Emgu.CV.dll
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\bin\Debug\Emgu.CV.UI.dll
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\bin\Debug\Emgu.Util.dll
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\bin\Debug\Microsoft.Research.Kinect.dll
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\bin\Debug\Microsoft.Expression.Drawing.dll
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\bin\Debug\Microsoft.Expression.Drawing.xml
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csproj.RecognitionHand.exe.config
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\MainWindow.g.cs
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\App.g.cs
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand_Content.g.cs
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand_MarkupCompile.cache
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand_MarkupCompile.lref
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\MainWindow.baml
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.g.resources
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.Properties.Resources.resources
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csproj.GenerateResource.Cache
+C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csprojResolveAssemblyReference.cache

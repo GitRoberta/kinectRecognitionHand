@@ -8,9 +8,9 @@
         Title="MainWindow" Height="400" Width="850">
     <Grid>
         <Label x:Name="labelBGR" Content="Color" HorizontalAlignment="Left"   VerticalAlignment="Top"/>
-        <Image x:Name="imageBGR" HorizontalAlignment="Left" Height="200"  VerticalAlignment="Center" Width="250" />
+        <Image x:Name="imageBGR" HorizontalAlignment="Left" Height="300"  VerticalAlignment="Center" Width="300" />
         <Label x:Name="labelConvexHull" Content="ConvexHull" HorizontalAlignment="Right"  VerticalAlignment="Top"/>
-        <Image x:Name="imageConvexHull" HorizontalAlignment="Right" Height="200" VerticalAlignment="Center" Width="200"/>
+        <Image x:Name="imageConvexHull" HorizontalAlignment="Right" Height="300" VerticalAlignment="Center" Width="300"/>
 
         <Canvas x:Name ="canvas">
             <Ellipse x:Name ="hand" Height="50" Width="50"  Stroke="AliceBlue" Fill="Blue" VerticalAlignment="Center" HorizontalAlignment="Center"></Ellipse>
