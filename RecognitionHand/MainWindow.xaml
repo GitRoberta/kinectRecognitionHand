@@ -1,0 +1,21 @@
+﻿<Window x:Class="RecognitionHand.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RecognitionHand"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="400" Width="850">
+    <Grid>
+        <Label x:Name="labelBGR" Content="Color" HorizontalAlignment="Left"   VerticalAlignment="Top"/>
+        <Image x:Name="imageBGR" HorizontalAlignment="Left" Height="200"  VerticalAlignment="Center" Width="250" />
+        <Label x:Name="labelConvexHull" Content="ConvexHull" HorizontalAlignment="Right"  VerticalAlignment="Top"/>
+        <Image x:Name="imageConvexHull" HorizontalAlignment="Right" Height="200" VerticalAlignment="Center" Width="200"/>
+
+        <Canvas x:Name ="canvas">
+            <Ellipse x:Name ="hand" Height="50" Width="50"  Stroke="AliceBlue" Fill="Blue" VerticalAlignment="Center" HorizontalAlignment="Center"></Ellipse>
+        </Canvas>
+     
+
+    </Grid>
+</Window>
