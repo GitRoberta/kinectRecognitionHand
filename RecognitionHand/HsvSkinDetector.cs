@@ -16,6 +16,7 @@ namespace RecognitionHand
             Image<Hsv, Byte> currentHsvFrame = Img.Convert<Hsv, Byte>();
             Image<Gray, byte> skin = new Image<Gray, byte>(Img.Width, Img.Height);
             skin = currentHsvFrame.InRange((Hsv)min, (Hsv)max);
+           
             return skin;
         }
     }

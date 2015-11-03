@@ -19,7 +19,6 @@ namespace RecognitionHand
             CvInvoke.cvErode(skin, skin, rect_12, 1);
             StructuringElementEx rect_6 = new StructuringElementEx(6, 6, 3, 3, Emgu.CV.CvEnum.CV_ELEMENT_SHAPE.CV_SHAPE_RECT);
             CvInvoke.cvDilate(skin, skin, rect_6, 2);
-
             return skin;
         }
 
