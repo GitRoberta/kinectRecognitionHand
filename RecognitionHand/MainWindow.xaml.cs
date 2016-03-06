@@ -40,6 +40,10 @@ namespace RecognitionHand
         private POINT result = new POINT(0, 0);
         private float previousFrameX = 0;
         private float fingerHeight = 5.5f;
+
+        private MouseController mouseController = new MouseController();
+        private int countAverage = 0;
+
         /* If true use ycbcr, else hsv */
         public bool useYCbCr = false;
         /* If we already get the color, dont do anything */
@@ -470,6 +474,8 @@ namespace RecognitionHand
             bmap.UnlockBits(bmapdata);
             return bmap;
         }
+
+        
         #endregion UsefulMethods
 
     }
