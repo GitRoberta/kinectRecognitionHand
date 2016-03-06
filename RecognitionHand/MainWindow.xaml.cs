@@ -39,13 +39,12 @@ namespace RecognitionHand
         private int fattoreDiCorrezione = 0;
         private POINT result = new POINT(0, 0);
         private float previousFrameX = 0;
+        private float fingerHeight = 5.5f;
         /* If true use ycbcr, else hsv */
         public bool useYCbCr = false;
         /* If we already get the color, dont do anything */
         private bool handColorTaken = false;
-
-      
-
+        
         #region ImportRegion
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
         private static extern int DeleteObject(IntPtr o);
@@ -74,9 +73,6 @@ namespace RecognitionHand
         {
             SetCursorPos(a, b);
         }
-
-
-
         #endregion
         
         public MainWindow()
@@ -84,7 +80,6 @@ namespace RecognitionHand
             InitializeComponent();
             Loaded += MainWindow_Loaded;
             Closed += MainWindow_Closed;
-
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -95,6 +90,7 @@ namespace RecognitionHand
             nui.VideoFrameReady += Nui_VideoFrameReady;
             nui.VideoStream.Open(ImageStreamType.Video, 2, ImageResolution.Resolution640x480, ImageType.Color);
 
+            //Parameters of Skeleton Tracking
             #region SmoothTransform
             nui.SkeletonEngine.TransformSmooth = true;
             var parameters = new TransformSmoothParameters { Smoothing = 0.75f, Correction = 0.0f,
@@ -105,14 +101,12 @@ namespace RecognitionHand
             nui.SkeletonFrameReady += Nui_skeleton_SkeletonFrameReady;
 
             #region HandRecognitionInit
-
-
+            
             //hsv_min = new Hsv(10, 45, 50);
             //hsv_max = new Hsv(20, 255, 255);
             YCrCb_min = new Ycc(0, 131, 80);
             YCrCb_max = new Ycc(255, 185, 135);
-
-
+            //Parameter Test
             hsv_min = new Hsv(11, 27, 94);
             hsv_max = new Hsv(14, 255, 197);
 
@@ -128,24 +122,24 @@ namespace RecognitionHand
             hsv_max_saturation_slider.Value = hsv_max.Satuation;
             hsv_max_value_slider.Value = hsv_max.Value;
 
-             box = new MCvBox2D();
+            box = new MCvBox2D();
             #endregion
-         
+        }
+
+        private void MainWindow_Closed(object sender, EventArgs e)
+        {
+            nui.Uninitialize();
         }
 
         private void Nui_skeleton_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
             SkeletonFrame allSkeletons = e.SkeletonFrame;
-
             SkeletonData skeleton = (from s in allSkeletons.Skeletons
                                      where s.TrackingState == SkeletonTrackingState.Tracked select s).FirstOrDefault();
-
             if (skeleton != null)
                 calculateJointPosition(skeleton.Joints[JointID.HandRight]);    
         }
         
-      
-
         private void calculateJointPosition(Joint joint) {
             var scaledJoint = joint.ScaleTo((int)ScreenWidth, (int)ScreenHeight, 1, 1);
             int correctX = (int)scaledJoint.Position.X;
@@ -156,7 +150,6 @@ namespace RecognitionHand
             int x = (int)((correctX + p.X) / 2);
             int y = (int)((correctY + p.Y) / 2);
             handPosition = new POINT((int)scaledJoint.Position.X, (int)scaledJoint.Position.Y);
-            //fattoreDiCorrezione = calculateCorretiveFactor(scaledJoint.Position.Z);
             fattoreDiCorrezione = widhtHand / 2;
 
             /* Applying a little threshold... */
@@ -164,11 +157,6 @@ namespace RecognitionHand
             //{
             // SetPositon(x, y);
             //}
-        }
-
-        private int calculateCorretiveFactor(float depth) {
-            int correctiveFactor = (int)(((heightHand / 2) * depth) / 1.5f);
-            return correctiveFactor;
         }
 
         private POINT calculateRelativeHandPosition(int resolutionX = 640, int resolutionY = 480) {
@@ -193,30 +181,8 @@ namespace RecognitionHand
             result.Y = ((result.Y - fattoreDiCorrezione > 0) && (result.Y - fattoreDiCorrezione < resolutionY)) ? result.Y - fattoreDiCorrezione : 0;
             previousFrameX = result.X;
             return result;
-
         }
-
-        #region ConvertPlanarImageToBitmap
-        Bitmap PImageToBitmap(PlanarImage PImage)
-        {
-            Bitmap bmap = new Bitmap(PImage.Width, PImage.Height, PixelFormat.Format32bppRgb);
-            BitmapData bmapdata = bmap.LockBits(
-            new Rectangle(0, 0, PImage.Width, PImage.Height), ImageLockMode.WriteOnly, bmap.PixelFormat);
-            IntPtr ptr = bmapdata.Scan0;
-            System.Runtime.InteropServices.Marshal.Copy(PImage.Bits,
-            0,
-            ptr,
-            PImage.Width *
-            PImage.BytesPerPixel *
-             PImage.Height);
-            bmap.UnlockBits(bmapdata);
-            return bmap;
-        }
-        #endregion
-
-
-
-
+        
         private void Nui_VideoFrameReady(object sender, ImageFrameReadyEventArgs e)
         {
             Image<Bgr, byte> subImg=null;
@@ -227,8 +193,7 @@ namespace RecognitionHand
                 if (e.ImageFrame.Image.Equals(null)) return;
                 Image<Bgr, byte> _my_image = new Image<Bgr, byte>(PImageToBitmap(e.ImageFrame.Image));
                 #endregion
-
-
+                
                 if (_my_image == null) return;
 
                 POINT actual_hand_position = new POINT(0, 0);
@@ -257,51 +222,10 @@ namespace RecognitionHand
             DeleteObject(_my_image);
         }
 
-
-        #region HistogramMethods
-
-
-        /* Note: myimage must be the image that we obtain by subdivition of the main image */
-        private void calculate_skin_histogram(Image<Bgr, byte> my_image = null,Image<Bgr,byte> subimg=null) {
-            if (my_image == null || subimg==null) return;
-
-            float weight = 0.03f;
-            float[] hue_hist;
-            float[] hand_hist;
-
-            /* Apply the hsv global filter that "works" to my_image */
-
-            /* First filter the bgr image with global skin  color, then calculate the histogram */
-            _histogram(out hue_hist, 0, false, my_image);
-            /* Then take the subimage of the head(because there are certainly skin pixel, so it must be very small...and calculate the relative histogram*/
-            _histogram(out hand_hist, 0, false, subimg);
-
-            /* Merge the histograms and use the result histogram as a mask 
-               Linear interpolation of histograms= Hres= (1-weight)* hue_hist + weight*hand_hist   */
-            /* TODO:: usare la funzione MinMax per ottenere i valori minimi dell'istogramma e applicarli come threshold */
-        }
-
-        /* Fill the array with the histogram of the passed image */
-        private static void _histogram(out float[] result_hist,int index=-1, bool convert_to_hsv=false, Image<Bgr,byte> my_image=null) {
-            result_hist = new float[256];
-            if (my_image == null || index == -1) return;
-            if(convert_to_hsv)
-                my_image.Convert<Hsv, byte>();
-            Image<Gray, Byte> img2Blue = my_image[index];
-            DenseHistogram Histo = new DenseHistogram(255, new RangeF(0, 255));
-            
-            Histo.Calculate<Byte>(new Image<Gray, byte>[] { img2Blue},true,null);          
-            Histo.MatND.ManagedArray.CopyTo(result_hist, 0);
-            Histo.Clear();
-        }
-
-        #endregion
-
         #region PrincipalMethods
 
         private void takeSkin(Image<Bgr, byte> my_image) {
             HsvSkinDetector skin_detector=null;
-
             if (useYCbCr)
                 skinDetector = new YCrCbSkinDetector();
             else
@@ -336,24 +260,18 @@ namespace RecognitionHand
                     currentFrame.Draw(biggestContour, new Bgr(Color.DarkViolet), 2);
                     Contour<System.Drawing.Point> currentContour = biggestContour.ApproxPoly(biggestContour.Perimeter * 0.0025, storage);
                     currentFrame.Draw(currentContour, new Bgr(System.Drawing.Color.LimeGreen), 2);
-                    biggestContour = currentContour;
-
-
+                    biggestContour = currentContour;                    
                     hull = biggestContour.GetConvexHull(Emgu.CV.CvEnum.ORIENTATION.CV_CLOCKWISE);
                     box = biggestContour.GetMinAreaRect();
                     PointF[] points = box.GetVertices();
-
                     //handRect = box.MinAreaRect();
                     //currentFrame.Draw(handRect, new Bgr(200, 0, 0), 1);
-
                     System.Drawing.Point[] ps = new System.Drawing.Point[points.Length];
-                    for (int i = 0; i < points.Length; i++)
+                    for (int i = 0; i < points.Length; i++) {
                         ps[i] = new System.Drawing.Point((int)points[i].X, (int)points[i].Y);
-
+                    }
                     currentFrame.DrawPolyline(hull.ToArray(), true, new Bgr(200, 125, 75), 2);
                     currentFrame.Draw(new CircleF(new PointF(box.center.X, box.center.Y), 3), new Bgr(200, 125, 75), 2);
-
-
                     filteredHull = new Seq<System.Drawing.Point>(storage);
                     for (int i = 0; i < hull.Total; i++)
                     {
@@ -362,35 +280,26 @@ namespace RecognitionHand
                             filteredHull.Push(hull[i]);
                         }
                     }
-
-
                     defects = biggestContour.GetConvexityDefacts(storage, Emgu.CV.CvEnum.ORIENTATION.CV_CLOCKWISE);
-
                     defectArray = defects.ToArray();
                     DrawAndComputeFingersNum(currentFrame,filteredHull,defects,defectArray);
                 }
-                
-
                 imageConvexHull.Source = toBitmapSourceFromImage(currentFrame);
             }
         }
-
 
         private void DrawAndComputeFingersNum(Image<Bgr, byte> currentFrame, Seq<System.Drawing.Point> filteredHull, Seq<MCvConvexityDefect> defects, MCvConvexityDefect[] defectArray)
         {
             int fingerNum = 0;
 
-           // Console.WriteLine("Filtered_hull total="+filteredHull.Total);
-
-
             #region hull drawing
-            for (int i = 0; i < filteredHull.Total; i++)
-            {
-                PointF hullPoint = new PointF((float)filteredHull[i].X,
-                                              (float)filteredHull[i].Y);
-                CircleF hullCircle = new CircleF(hullPoint, 4);
-                //currentFrame.Draw(hullCircle, new Bgr(Color.Aquamarine), 2);
-            }
+            //for (int i = 0; i < filteredHull.Total; i++)
+            //{
+            //    PointF hullPoint = new PointF((float)filteredHull[i].X,
+            //                                  (float)filteredHull[i].Y);
+            //    CircleF hullCircle = new CircleF(hullPoint, 4);
+            //    currentFrame.Draw(hullCircle, new Bgr(Color.Aquamarine), 2);
+            //}
             #endregion
 
             #region defects drawing
@@ -402,51 +311,35 @@ namespace RecognitionHand
                 PointF depthPoint = new PointF((float)defectArray[i].DepthPoint.X,
                                                 (float)defectArray[i].DepthPoint.Y);
 
-                PointF endPoint = new PointF((float)defectArray[i].EndPoint.X,
-                                                (float)defectArray[i].EndPoint.Y);
+                //PointF endPoint = new PointF((float)defectArray[i].EndPoint.X,
+                //                                (float)defectArray[i].EndPoint.Y);
 
-                LineSegment2D startDepthLine = new LineSegment2D(defectArray[i].StartPoint, defectArray[i].DepthPoint);
-
-                LineSegment2D depthEndLine = new LineSegment2D(defectArray[i].DepthPoint, defectArray[i].EndPoint);
-
+                //LineSegment2D startDepthLine = new LineSegment2D(defectArray[i].StartPoint, defectArray[i].DepthPoint);
+                //LineSegment2D depthEndLine = new LineSegment2D(defectArray[i].DepthPoint, defectArray[i].EndPoint);
                 CircleF startCircle = new CircleF(startPoint, 5f);
-
                 CircleF depthCircle = new CircleF(depthPoint, 5f);
+                //CircleF endCircle = new CircleF(endPoint, 5f);
 
-                CircleF endCircle = new CircleF(endPoint, 5f);
-
-                //Custom heuristic based on some experiment, double check it before use ; 6.5 old value of dividing height
-
-                if ((startCircle.Center.Y < box.center.Y || depthCircle.Center.Y < box.center.Y) && (startCircle.Center.Y < depthCircle.Center.Y) && (Math.Sqrt(Math.Pow(startCircle.Center.X - depthCircle.Center.X, 2) + Math.Pow(startCircle.Center.Y - depthCircle.Center.Y, 2)) > (box.size.Height / 5.5)))
+                //Custom heuristic based on some experiment, double check it before use ; 
+                if ((startCircle.Center.Y < box.center.Y || depthCircle.Center.Y < box.center.Y) && (startCircle.Center.Y < depthCircle.Center.Y) && (Math.Sqrt(Math.Pow(startCircle.Center.X - depthCircle.Center.X, 2) + Math.Pow(startCircle.Center.Y - depthCircle.Center.Y, 2)) > (box.size.Height / fingerHeight)))
                 {
                     if (fingerNum < 5)
                     {
-                        fingerNum++;
-                        //currentFrame.Draw(startDepthLine, new Bgr(System.Drawing.Color.Red), 2);
-                        //currentFrame.Draw(depthEndLine, new Bgr(Color.Magenta), 2);
+                        fingerNum++;                       
                     }
                 }
-
-
-                //  currentFrame.Draw(startCircle, new Bgr(System.Drawing.Color.Red), 2);
-                //  currentFrame.Draw(depthCircle, new Bgr(System.Drawing.Color.Yellow), 5);
-                //currentFrame.Draw(endCircle, new Bgr(Color.Black), 4);
+                
+                // currentFrame.Draw(startCircle, new Bgr(System.Drawing.Color.Red), 2);
+                // currentFrame.Draw(depthCircle, new Bgr(System.Drawing.Color.Yellow), 5);
+                // currentFrame.Draw(endCircle, new Bgr(Color.Black), 4);
             }
             #endregion
 
-            //MCvFont font = new MCvFont(Emgu.CV.CvEnum.FONT.CV_FONT_HERSHEY_DUPLEX, 5d, 5d);
-            //currentFrame.Draw(fingerNum.ToString(), ref font, new System.Drawing.Point(50, 150), new Bgr(System.Drawing.Color.White));
-            
             Console.WriteLine("Finger Number =" + fingerNum);
         }
 
         #endregion
-
-        private void MainWindow_Closed(object sender, EventArgs e)
-        {
-            nui.Uninitialize();
-        }
-
+        
         /* Change Hue Value */
         #region SliderHSV
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -460,7 +353,6 @@ namespace RecognitionHand
                 hsv_max_hue_slider.Value = hsv_max.Hue;
                 MAX_HSV_H.Content = hsv_max.Hue;
             }
-
             if(MIN_HSV_H!=null)
              MIN_HSV_H.Content = (int)slider.Value;
         }
@@ -546,8 +438,7 @@ namespace RecognitionHand
         {
             handColorTaken = true;
         }
-
-
+        
         #endregion
 
         #region UsefulMethods
@@ -563,7 +454,23 @@ namespace RecognitionHand
                 return bitsrc;
             }
         }
-        #endregion
+
+        Bitmap PImageToBitmap(PlanarImage PImage)
+        {
+            Bitmap bmap = new Bitmap(PImage.Width, PImage.Height, PixelFormat.Format32bppRgb);
+            BitmapData bmapdata = bmap.LockBits(
+            new Rectangle(0, 0, PImage.Width, PImage.Height), ImageLockMode.WriteOnly, bmap.PixelFormat);
+            IntPtr ptr = bmapdata.Scan0;
+            System.Runtime.InteropServices.Marshal.Copy(PImage.Bits,
+            0,
+            ptr,
+            PImage.Width *
+            PImage.BytesPerPixel *
+            PImage.Height);
+            bmap.UnlockBits(bmapdata);
+            return bmap;
+        }
+        #endregion UsefulMethods
 
     }
 }
