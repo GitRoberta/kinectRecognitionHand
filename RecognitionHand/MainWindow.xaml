@@ -10,32 +10,35 @@
         <Label x:Name="labelBGR" Content="Color" HorizontalAlignment="Left"   VerticalAlignment="Top"/>
         <Image x:Name="imageBGR" HorizontalAlignment="Left" Height="300"  VerticalAlignment="Center" Width="300" />
         <Label x:Name="labelConvexHull" Content="ConvexHull" HorizontalAlignment="Right"  VerticalAlignment="Top"/>
-        <Image x:Name="imageConvexHull" HorizontalAlignment="Right" Height="300" VerticalAlignment="Center" Width="300"/>
+        <Image x:Name="imageConvexHull" HorizontalAlignment="Right" Height="300" VerticalAlignment="Center" Width="300" Margin="0,25,10,144"/>
         <Label x:Name="label" Content="HSV Min Parameters" HorizontalAlignment="Left" Margin="356,25,0,0" VerticalAlignment="Top"/>
-        <Slider x:Name="hsv_hue_min_slider" Minimum="0" Maximum="10" HorizontalAlignment="Left" Margin="425,67,0,0" VerticalAlignment="Top" Width="110" ValueChanged="slider_ValueChanged"/>
+        <Slider x:Name="hsv_hue_min_slider" Minimum="0" Maximum="20" HorizontalAlignment="Left" Margin="425,67,0,0" VerticalAlignment="Top" Width="110" ValueChanged="slider_ValueChanged"/>
         <Label x:Name="label1" Content="Hue" HorizontalAlignment="Left" Margin="356,63,0,0" VerticalAlignment="Top"/>
         <Label x:Name="label2" Content="Saturation" HorizontalAlignment="Left" Margin="355,88,0,0" VerticalAlignment="Top"/>
-        <Slider x:Name="hsv_min_sat_slider" Minimum="0" Maximum="10" HorizontalAlignment="Left" Margin="425,92,0,0" VerticalAlignment="Top" Width="109" ValueChanged="hsv_min_sat_slider_ValueChanged"/>
+        <Slider x:Name="hsv_min_sat_slider" Minimum="0" Maximum="100" HorizontalAlignment="Left" Margin="425,92,0,0" VerticalAlignment="Top" Width="109" ValueChanged="hsv_min_sat_slider_ValueChanged"/>
         <Label x:Name="label3" Content="Value" HorizontalAlignment="Left" Margin="356,112,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.125,0.423"/>
-        <Slider Minimum="0" Maximum="10" x:Name="hsv_min_value_slider" HorizontalAlignment="Left" Margin="425,116,0,0" VerticalAlignment="Top" Width="109" ValueChanged="hsv_min_value_slider_ValueChanged"/>
+        <Slider Minimum="0" Maximum="255" x:Name="hsv_min_value_slider" HorizontalAlignment="Left" Margin="425,116,0,0" VerticalAlignment="Top" Width="109" ValueChanged="hsv_min_value_slider_ValueChanged"/>
         <Label x:Name="label4" Content="HSV Max Parameters" HorizontalAlignment="Left" Margin="356,184,0,0" VerticalAlignment="Top"/>
         <Label x:Name="label5" Content="Hue" HorizontalAlignment="Left" Margin="356,213,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.375,0.462"/>
         <Label x:Name="label6" Content="Saturation" HorizontalAlignment="Left" Margin="356,241,0,0" VerticalAlignment="Top"/>
         <Label x:Name="label7" Content="Value" HorizontalAlignment="Left" Margin="356,270,0,0" VerticalAlignment="Top"/>
-        <Slider x:Name="hsv_max_hue_slider" Minimum="11" Maximum="255" HorizontalAlignment="Left" Margin="424,217,0,0" VerticalAlignment="Top" Width="104" ValueChanged="hsv_max_hue_slider_ValueChanged"/>
-        <Slider Minimum="11" Maximum="255" x:Name="hsv_max_saturation_slider" HorizontalAlignment="Left" Margin="424,245,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.111" Width="105" ValueChanged="hsv_max_saturation_slider_ValueChanged"/>
-        <Slider Minimum="11" Maximum="255" x:Name="hsv_max_value_slider" HorizontalAlignment="Left" Margin="424,274,0,0" VerticalAlignment="Top" Width="104" ValueChanged="hsv_max_value_slider_ValueChanged"/>
-        <Label x:Name="label8" Content="Actual HSV" HorizontalAlignment="Left" Margin="356,332,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="Actual_HSV_H" Content="0" HorizontalAlignment="Left" Margin="406,380,0,0" VerticalAlignment="Top" Width="69"/>
+        <Slider x:Name="hsv_max_hue_slider" Minimum="8" Maximum="255" HorizontalAlignment="Left" Margin="424,217,0,0" VerticalAlignment="Top" Width="104" ValueChanged="hsv_max_hue_slider_ValueChanged"/>
+        <Slider Minimum="10" Maximum="255" x:Name="hsv_max_saturation_slider" HorizontalAlignment="Left" Margin="424,245,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.667,0.111" Width="105" ValueChanged="hsv_max_saturation_slider_ValueChanged"/>
+        <Slider Minimum="0" Maximum="255" x:Name="hsv_max_value_slider" HorizontalAlignment="Left" Margin="424,274,0,0" VerticalAlignment="Top" Width="104" ValueChanged="hsv_max_value_slider_ValueChanged"/>
+        <Label x:Name="label8" Content="GENERAL SKIN HSV" HorizontalAlignment="Left" Margin="356,332,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="Actual_HSV_H" Content="0" HorizontalAlignment="Left" Margin="406,380,0,0" VerticalAlignment="Top" Width="181"/>
         <Label x:Name="label9" Content="H" HorizontalAlignment="Left" Margin="355,380,0,0" VerticalAlignment="Top"/>
         <Label x:Name="label10" Content="S" HorizontalAlignment="Left" Margin="356,406,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.184,0.269"/>
         <Label x:Name="label11" Content="V" HorizontalAlignment="Left" Margin="356,431,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.353,0.462"/>
-        <Label x:Name="ACTUAL_HSV_S" Content="0" HorizontalAlignment="Left" Margin="406,406,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.211,0.231"/>
-        <Label x:Name="ACTUAL_HSV_V" Content="0" HorizontalAlignment="Left" Margin="406,432,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.211,-1.667"/>
+        <Label x:Name="ACTUAL_HSV_S" Content="0" HorizontalAlignment="Left" Margin="406,406,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.211,0.231" Width="170"/>
+        <Label x:Name="ACTUAL_HSV_V" Content="0" HorizontalAlignment="Left" Margin="406,432,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.211,-1.667" Width="170"/>
         <Label x:Name="MIN_HSV_H" Content="0" HorizontalAlignment="Left" Margin="542,62,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.816,0.192"/>
         <Label x:Name="MIN_HSV_V" Content="0" HorizontalAlignment="Left" Margin="543,108,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="MAX_HSV_H" Content="0" HorizontalAlignment="Left" Margin="533,211,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="MAX_HSV_V" Content="0" HorizontalAlignment="Left" Margin="534,269,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="MAX_HSV_H" Content="0" HorizontalAlignment="Left" Margin="544,211,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="MAX_HSV_V" Content="0" HorizontalAlignment="Left" Margin="545,269,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="MIN_HSV_S" Content="0" HorizontalAlignment="Left" Margin="543,82,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.474,0.269"/>
+        <Label x:Name="MAX_HSV_S" Content="0" HorizontalAlignment="Left" Margin="545,238,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.474,0.269"/>
+        <Button x:Name="button" Content="START" HorizontalAlignment="Left" Margin="608,367,0,0" VerticalAlignment="Top" Width="250" Height="51" Click="button_Click"/>
 
 
 

@@ -5,10 +5,8 @@ using System.Windows.Controls;
 using Microsoft.Research.Kinect.Nui;
 using Coding4Fun.Kinect.Wpf;
 using System.Drawing;
-using System.ComponentModel;
 using Emgu.CV;
 using Emgu.CV.Structure;
-using System.IO;
 using System.Drawing.Imaging;
 using System.Windows.Media.Imaging;
 
@@ -24,14 +22,11 @@ namespace RecognitionHand
 
         private double ScreenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
         private double ScreenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
-
-        private AdaptiveSkinDetector detector;
         private Hsv hsv_min;
         private Hsv hsv_max;
         private Ycc YCrCb_max;
         private Ycc YCrCb_min;
         private MCvBox2D box;
-        private Emgu.CV.Structure.Ellipse ellip;
         private YCrCbSkinDetector skinDetector;
         public Seq<System.Drawing.Point> hull;
         public Seq<System.Drawing.Point> filteredHull;
@@ -40,17 +35,16 @@ namespace RecognitionHand
         private Image<Bgr, byte> _my_image;
         private Image<Gray, Byte> skin;
         private POINT handPosition = new POINT(0, 0);
-        private int heightHand =0, widhtHand = 0;
+        private int heightHand = 0, widhtHand = 0;
         private int fattoreDiCorrezione = 0;
         private POINT result = new POINT(0, 0);
-        /* z-index of the hand */
-        private float z_index = 0;
-
+        private float previousFrameX = 0;
         /* If true use ycbcr, else hsv */
-        public bool useYCbCr=false;
+        public bool useYCbCr = false;
         /* If we already get the color, dont do anything */
         private bool handColorTaken = false;
 
+      
 
         #region ImportRegion
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
@@ -81,45 +75,62 @@ namespace RecognitionHand
             SetCursorPos(a, b);
         }
 
-   
+
 
         #endregion
-
+        
         public MainWindow()
         {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
             Closed += MainWindow_Closed;
-        
+
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            heightHand =(int) imageConvexHull.Height;
-            widhtHand = (int) imageConvexHull.Width;
-            nui.Initialize(RuntimeOptions.UseColor | RuntimeOptions.UseDepth | RuntimeOptions.UseSkeletalTracking);
+            heightHand = (int)imageConvexHull.Height;
+            widhtHand = (int)imageConvexHull.Width;
+            nui.Initialize(RuntimeOptions.UseColor | RuntimeOptions.UseSkeletalTracking);
             nui.VideoFrameReady += Nui_VideoFrameReady;
-            nui.VideoStream.Open(ImageStreamType.Video, 2, ImageResolution.Resolution1280x1024, ImageType.Color);     
+            nui.VideoStream.Open(ImageStreamType.Video, 2, ImageResolution.Resolution640x480, ImageType.Color);
 
             #region SmoothTransform
-                nui.SkeletonEngine.TransformSmooth = true;
-                 var parameters = new TransformSmoothParameters { Smoothing = 0.75f, Correction = 0.0f,
-                    Prediction = 0.0f, JitterRadius = 0.05f, MaxDeviationRadius = 0.04f };
-                 nui.SkeletonEngine.SmoothParameters = parameters;
+            nui.SkeletonEngine.TransformSmooth = true;
+            var parameters = new TransformSmoothParameters { Smoothing = 0.75f, Correction = 0.0f,
+                Prediction = 0.0f, JitterRadius = 0.05f, MaxDeviationRadius = 0.04f };
+            nui.SkeletonEngine.SmoothParameters = parameters;
             #endregion
 
             nui.SkeletonFrameReady += Nui_skeleton_SkeletonFrameReady;
 
             #region HandRecognitionInit
-                detector = new AdaptiveSkinDetector(1, AdaptiveSkinDetector.MorphingMethod.NONE);
-            
-                hsv_min = new Hsv(0, 45, 50);
-                hsv_max = new Hsv(20, 255, 255);
-                YCrCb_min = new Ycc(0, 131, 80);
-                YCrCb_max = new Ycc(255, 185, 135);
-                box = new MCvBox2D();
-                ellip = new Emgu.CV.Structure.Ellipse();
+
+
+            //hsv_min = new Hsv(10, 45, 50);
+            //hsv_max = new Hsv(20, 255, 255);
+            YCrCb_min = new Ycc(0, 131, 80);
+            YCrCb_max = new Ycc(255, 185, 135);
+
+
+            hsv_min = new Hsv(11, 27, 94);
+            hsv_max = new Hsv(14, 255, 197);
+
+            Actual_HSV_H.Content = "Min =" + hsv_min.Hue.ToString() + " Max=" + hsv_max.Hue.ToString();
+            ACTUAL_HSV_S.Content= "Min =" + hsv_min.Satuation.ToString() + " Max=" + hsv_max.Satuation.ToString();
+            ACTUAL_HSV_V.Content = "Min =" + hsv_min.Value.ToString() + " Max=" + hsv_max.Value.ToString();
+
+            hsv_hue_min_slider.Value = hsv_min.Hue;
+            hsv_min_sat_slider.Value = hsv_min.Satuation;
+            hsv_min_value_slider.Value = hsv_min.Value;
+
+            hsv_max_hue_slider.Value = hsv_max.Hue;
+            hsv_max_saturation_slider.Value = hsv_max.Satuation;
+            hsv_max_value_slider.Value = hsv_max.Value;
+
+             box = new MCvBox2D();
             #endregion
+         
         }
 
         private void Nui_skeleton_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
@@ -130,25 +141,23 @@ namespace RecognitionHand
                                      where s.TrackingState == SkeletonTrackingState.Tracked select s).FirstOrDefault();
 
             if (skeleton != null)
-                calculateJointPosition(skeleton.Joints[JointID.HandRight]);
-              }
+                calculateJointPosition(skeleton.Joints[JointID.HandRight]);    
+        }
+        
+      
 
         private void calculateJointPosition(Joint joint) {
-            var scaledJoint = joint.ScaleTo((int)ScreenWidth, (int)ScreenHeight, 1,  1);
-            int correctX = (int) scaledJoint.Position.X ;
-            int correctY = (int) scaledJoint.Position.Y ;
+            var scaledJoint = joint.ScaleTo((int)ScreenWidth, (int)ScreenHeight, 1, 1);
+            int correctX = (int)scaledJoint.Position.X;
+            int correctY = (int)scaledJoint.Position.Y;
             /* Map point and interpolate for a smoothing transition */
             POINT p;
             GetCursorPos(out p);
             int x = (int)((correctX + p.X) / 2);
             int y = (int)((correctY + p.Y) / 2);
-            handPosition = new POINT((int) scaledJoint.Position.X, (int) scaledJoint.Position.Y);
-            z_index = scaledJoint.Position.Z;
+            handPosition = new POINT((int)scaledJoint.Position.X, (int)scaledJoint.Position.Y);
             //fattoreDiCorrezione = calculateCorretiveFactor(scaledJoint.Position.Z);
             fattoreDiCorrezione = widhtHand / 2;
-
-            if (!handColorTaken)
-                handColorTaken = true;
 
             /* Applying a little threshold... */
             //if (Math.Abs(scaledJoint.Position.X - p.X) > 2.0f || Math.Abs(scaledJoint.Position.Y - p.Y) > 2.0f)
@@ -158,15 +167,18 @@ namespace RecognitionHand
         }
 
         private int calculateCorretiveFactor(float depth) {
-            int correctiveFactor = (int)(((heightHand/2)*depth)/1.5f);
+            int correctiveFactor = (int)(((heightHand / 2) * depth) / 1.5f);
             return correctiveFactor;
         }
 
-        private POINT calculateRelativeHandPosition(int resolutionX=640, int resolutionY= 480) {
+        private POINT calculateRelativeHandPosition(int resolutionX = 640, int resolutionY = 480) {
             result.X = (int)((handPosition.X * resolutionX) / ScreenWidth);
             result.Y = (int)((handPosition.Y * resolutionY) / ScreenHeight);
+          
             result.X = ((result.X - fattoreDiCorrezione > 0) && (result.X - fattoreDiCorrezione < resolutionX)) ? result.X - fattoreDiCorrezione : 0;
-            if (result.Y < resolutionY / 3)
+            if (Math.Abs(result.X - previousFrameX) > 30 && previousFrameX !=0)
+                result.X =(int) previousFrameX;
+                if (result.Y <= resolutionY / 3)
             {
                 fattoreDiCorrezione = 200;
             }
@@ -179,8 +191,9 @@ namespace RecognitionHand
                 fattoreDiCorrezione = 150;
             }
             result.Y = ((result.Y - fattoreDiCorrezione > 0) && (result.Y - fattoreDiCorrezione < resolutionY)) ? result.Y - fattoreDiCorrezione : 0;
+            previousFrameX = result.X;
             return result;
-           
+
         }
 
         #region ConvertPlanarImageToBitmap
@@ -201,97 +214,101 @@ namespace RecognitionHand
         }
         #endregion
 
-        
+
 
 
         private void Nui_VideoFrameReady(object sender, ImageFrameReadyEventArgs e)
         {
+            Image<Bgr, byte> subImg=null;
+            try {
+                imageBGR.Source = e.ImageFrame.ToBitmapSource(); //--> currentFrame
 
-             imageBGR.Source = e.ImageFrame.ToBitmapSource(); //--> currentFrame
-         
-            #region MetodWithPlanarImage
+                #region MetodWithPlanarImage
                 if (e.ImageFrame.Image.Equals(null)) return;
                 Image<Bgr, byte> _my_image = new Image<Bgr, byte>(PImageToBitmap(e.ImageFrame.Image));
-            #endregion
+                #endregion
 
-            //Inseriamo una maschera 
-            /*
-            int radius = 100;
-            Image<Bgr, byte> subImg = new Image<Bgr, byte>(widhtHand, heightHand);
-            calculateRelativeHandPosition(1280, 1024);
-            _my_image.ROI = new Rectangle(result.X, result.Y, widhtHand, heightHand);
-            CvInvoke.cvCopy(_my_image, subImg, IntPtr.Zero);
-            Image<Gray, byte> mask = new Image<Gray, byte>(widhtHand, heightHand);
-            CvInvoke.cvCircle(mask.Ptr, new System.Drawing.Point(widhtHand/2, heightHand/2), radius, new MCvScalar(255, 255, 255), -1, Emgu.CV.CvEnum.LINE_TYPE.CV_AA, 0);
-            subImg = subImg.And(subImg, mask);
-            */
-            if (_my_image == null) return;
 
-            POINT actual_hand_position = new POINT(0, 0);
-            actual_hand_position.X = (int)((handPosition.X * 1280) / ScreenWidth);
-            actual_hand_position.Y = (int)((handPosition.Y * 1024) / ScreenHeight);
+                if (_my_image == null) return;
 
-            if (actual_hand_position.X >= _my_image.Width || actual_hand_position.Y >= _my_image.Height)
-                Console.WriteLine("Pixel out of range");
-            else
+                POINT actual_hand_position = new POINT(0, 0);
+                actual_hand_position.X = (int)((handPosition.X * 640) / ScreenWidth);
+                actual_hand_position.Y = (int)((handPosition.Y * 480) / ScreenHeight);
+
+                subImg = new Image<Bgr, byte>(widhtHand, heightHand);
+                calculateRelativeHandPosition();
+
+                /* Take the ROI FROM THE SOURCE IMAGE */
+                _my_image.ROI = new Rectangle(result.X, result.Y, widhtHand, heightHand);
+                CvInvoke.cvCopy(_my_image, subImg, IntPtr.Zero);
+
+                takeSkin(subImg);
+                if (handColorTaken)
+                    ExtractContourAndHull(skin, subImg);
+            }
+            catch (Exception eex)
             {
-                if(handColorTaken)
-                { 
-                _my_image.Convert<Hsv, Byte>();
-                Hsv bgr_color = new Hsv(_my_image.Data[actual_hand_position.X, actual_hand_position.Y, 0], _my_image.Data[actual_hand_position.X, actual_hand_position.Y, 1], _my_image.Data[actual_hand_position.X, actual_hand_position.Y, 2]);
-                Actual_HSV_H.Content = bgr_color.Hue.ToString();
-                ACTUAL_HSV_S.Content = bgr_color.Satuation.ToString();
-                ACTUAL_HSV_V.Content = bgr_color.Value.ToString();
-                hsv_min.Hue = (bgr_color.Hue -2 > 6) ? 6 : bgr_color.Hue - 2;
-                //hsv_min.Satuation = bgr_color.Satuation;
-                hsv_min.Value = bgr_color.Value -2;
-
-                hsv_max.Hue = (bgr_color.Hue + 2 > 20) ? 20 : bgr_color.Hue + 2;
-                //hsv_max.Satuation = bgr_color.Satuation;
-                hsv_max.Value = bgr_color.Value + 2;
-
-                    _my_image.Convert<Bgr, Byte>();
-                }
+                Console.WriteLine("Exception " + eex.ToString());
+                DeleteObject(subImg);
+                DeleteObject(_my_image);
             }
 
-
-            Image<Bgr, byte> subImg = new Image<Bgr, byte>(widhtHand, heightHand);
-            calculateRelativeHandPosition(1280, 1024);
-            _my_image.ROI = new Rectangle(result.X, result.Y, widhtHand, heightHand);
-            
-            CvInvoke.cvCopy(_my_image, subImg, IntPtr.Zero);
-
-            takeSkin(subImg);
-            //ExtractContourAndHull(skin, subImg);
-            //DeleteObject(mask);
             DeleteObject(subImg);
             DeleteObject(_my_image);
-
-           
         }
 
 
-        public void takeHandColor() {
+        #region HistogramMethods
 
+
+        /* Note: myimage must be the image that we obtain by subdivition of the main image */
+        private void calculate_skin_histogram(Image<Bgr, byte> my_image = null,Image<Bgr,byte> subimg=null) {
+            if (my_image == null || subimg==null) return;
+
+            float weight = 0.03f;
+            float[] hue_hist;
+            float[] hand_hist;
+
+            /* Apply the hsv global filter that "works" to my_image */
+
+            /* First filter the bgr image with global skin  color, then calculate the histogram */
+            _histogram(out hue_hist, 0, false, my_image);
+            /* Then take the subimage of the head(because there are certainly skin pixel, so it must be very small...and calculate the relative histogram*/
+            _histogram(out hand_hist, 0, false, subimg);
+
+            /* Merge the histograms and use the result histogram as a mask 
+               Linear interpolation of histograms= Hres= (1-weight)* hue_hist + weight*hand_hist   */
+            /* TODO:: usare la funzione MinMax per ottenere i valori minimi dell'istogramma e applicarli come threshold */
+        }
+
+        /* Fill the array with the histogram of the passed image */
+        private static void _histogram(out float[] result_hist,int index=-1, bool convert_to_hsv=false, Image<Bgr,byte> my_image=null) {
+            result_hist = new float[256];
+            if (my_image == null || index == -1) return;
+            if(convert_to_hsv)
+                my_image.Convert<Hsv, byte>();
+            Image<Gray, Byte> img2Blue = my_image[index];
+            DenseHistogram Histo = new DenseHistogram(255, new RangeF(0, 255));
             
-           
+            Histo.Calculate<Byte>(new Image<Gray, byte>[] { img2Blue},true,null);          
+            Histo.MatND.ManagedArray.CopyTo(result_hist, 0);
+            Histo.Clear();
         }
+
+        #endregion
+
+        #region PrincipalMethods
 
         private void takeSkin(Image<Bgr, byte> my_image) {
-            
             HsvSkinDetector skin_detector=null;
-            CustomYCrCbSkinDetector csd = new CustomYCrCbSkinDetector();
+
             if (useYCbCr)
                 skinDetector = new YCrCbSkinDetector();
             else
                 skin_detector = new HsvSkinDetector();
             skin = (useYCbCr)? skinDetector.DetectSkin(my_image, YCrCb_min, YCrCb_max):skin_detector.DetectSkin(my_image, hsv_min, hsv_max);
-          
-            //skin = new Image<Gray, byte>(my_image.Width,my_image.Height);
-            //detector.Process(my_image, skin);
-            imageConvexHull.Source = toBitmapSourceFromImage(skin);
-
             
+            imageConvexHull.Source = toBitmapSourceFromImage(skin);
         }
 
         private void ExtractContourAndHull(Image<Gray, byte> skin, Image<Bgr,byte> currentFrame)
@@ -325,6 +342,7 @@ namespace RecognitionHand
                     hull = biggestContour.GetConvexHull(Emgu.CV.CvEnum.ORIENTATION.CV_CLOCKWISE);
                     box = biggestContour.GetMinAreaRect();
                     PointF[] points = box.GetVertices();
+
                     //handRect = box.MinAreaRect();
                     //currentFrame.Draw(handRect, new Bgr(200, 0, 0), 1);
 
@@ -345,7 +363,7 @@ namespace RecognitionHand
                         }
                     }
 
-                    
+
                     defects = biggestContour.GetConvexityDefacts(storage, Emgu.CV.CvEnum.ORIENTATION.CV_CLOCKWISE);
 
                     defectArray = defects.ToArray();
@@ -362,7 +380,7 @@ namespace RecognitionHand
         {
             int fingerNum = 0;
 
-            //Console.WriteLine("Filtered_hull total="+filteredHull.Total);
+           // Console.WriteLine("Filtered_hull total="+filteredHull.Total);
 
 
             #region hull drawing
@@ -371,7 +389,7 @@ namespace RecognitionHand
                 PointF hullPoint = new PointF((float)filteredHull[i].X,
                                               (float)filteredHull[i].Y);
                 CircleF hullCircle = new CircleF(hullPoint, 4);
-                currentFrame.Draw(hullCircle, new Bgr(Color.Aquamarine), 2);
+                //currentFrame.Draw(hullCircle, new Bgr(Color.Aquamarine), 2);
             }
             #endregion
 
@@ -397,27 +415,32 @@ namespace RecognitionHand
 
                 CircleF endCircle = new CircleF(endPoint, 5f);
 
-                //Custom heuristic based on some experiment, double check it before use
-                if ((startCircle.Center.Y < box.center.Y || depthCircle.Center.Y < box.center.Y) && (startCircle.Center.Y < depthCircle.Center.Y) && (Math.Sqrt(Math.Pow(startCircle.Center.X - depthCircle.Center.X, 2) + Math.Pow(startCircle.Center.Y - depthCircle.Center.Y, 2)) > box.size.Height / 6.5))
+                //Custom heuristic based on some experiment, double check it before use ; 6.5 old value of dividing height
+
+                if ((startCircle.Center.Y < box.center.Y || depthCircle.Center.Y < box.center.Y) && (startCircle.Center.Y < depthCircle.Center.Y) && (Math.Sqrt(Math.Pow(startCircle.Center.X - depthCircle.Center.X, 2) + Math.Pow(startCircle.Center.Y - depthCircle.Center.Y, 2)) > (box.size.Height / 5.5)))
                 {
-                    fingerNum++;
-                    currentFrame.Draw(startDepthLine, new Bgr(System.Drawing.Color.Green), 2);
-                    //currentFrame.Draw(depthEndLine, new Bgr(Color.Magenta), 2);
+                    if (fingerNum < 5)
+                    {
+                        fingerNum++;
+                        //currentFrame.Draw(startDepthLine, new Bgr(System.Drawing.Color.Red), 2);
+                        //currentFrame.Draw(depthEndLine, new Bgr(Color.Magenta), 2);
+                    }
                 }
 
 
-                //currentFrame.Draw(startCircle, new Bgr(System.Drawing.Color.Red), 2);
-                //currentFrame.Draw(depthCircle, new Bgr(System.Drawing.Color.Yellow), 5);
-                //currentFrame.Draw(endCircle, new Bgr(Color.DarkBlue), 4);
+                //  currentFrame.Draw(startCircle, new Bgr(System.Drawing.Color.Red), 2);
+                //  currentFrame.Draw(depthCircle, new Bgr(System.Drawing.Color.Yellow), 5);
+                //currentFrame.Draw(endCircle, new Bgr(Color.Black), 4);
             }
             #endregion
 
             //MCvFont font = new MCvFont(Emgu.CV.CvEnum.FONT.CV_FONT_HERSHEY_DUPLEX, 5d, 5d);
             //currentFrame.Draw(fingerNum.ToString(), ref font, new System.Drawing.Point(50, 150), new Bgr(System.Drawing.Color.White));
+            
             Console.WriteLine("Finger Number =" + fingerNum);
         }
 
-       
+        #endregion
 
         private void MainWindow_Closed(object sender, EventArgs e)
         {
@@ -430,43 +453,98 @@ namespace RecognitionHand
         {
             var slider = sender as Slider;
             hsv_min.Hue = (int)slider.Value;
-            MIN_HSV_H.Content = (int)slider.Value;
+
+            if (hsv_max.Hue <= hsv_min.Hue)
+            {
+                hsv_max.Hue = hsv_min.Hue + 1;
+                hsv_max_hue_slider.Value = hsv_max.Hue;
+                MAX_HSV_H.Content = hsv_max.Hue;
+            }
+
+            if(MIN_HSV_H!=null)
+             MIN_HSV_H.Content = (int)slider.Value;
         }
 
         private void hsv_min_sat_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             var slider = sender as Slider;
             hsv_min.Satuation = (int)slider.Value;
-           
+
+            if (hsv_max.Satuation <= hsv_min.Satuation)
+            {
+                hsv_max.Satuation = hsv_min.Satuation + 1;
+                hsv_max_saturation_slider.Value = hsv_max.Satuation;
+                MAX_HSV_S.Content = hsv_max.Satuation;
+            }
+
+            if (MIN_HSV_S != null)
+                MIN_HSV_S.Content = (int)slider.Value;
         }
 
         private void hsv_min_value_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             var slider = sender as Slider;
             hsv_min.Value = (int)slider.Value;
-            MIN_HSV_V.Content = (int)slider.Value;
+
+            if (hsv_max.Value <= hsv_min.Value)
+            {
+                hsv_max.Value = hsv_min.Value + 1;
+                hsv_max_value_slider.Value = hsv_max.Value;
+                MAX_HSV_V.Content = hsv_max.Value;
+            }
+
+            if (MIN_HSV_V != null)
+                MIN_HSV_V.Content = (int)slider.Value;
         }
 
         private void hsv_max_hue_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             var slider = sender as Slider;
             hsv_max.Hue = (int)slider.Value;
+
+            if (hsv_max.Hue <= hsv_min.Hue)
+            {
+                hsv_max.Hue = hsv_min.Hue + 1;
+                slider.Value = hsv_max.Hue;
+            }
+
             if(MAX_HSV_H!=null)
-            MAX_HSV_H.Content = (int)slider.Value;
+                MAX_HSV_H.Content = (int)slider.Value;
         }
 
         private void hsv_max_saturation_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             var slider = sender as Slider;
             hsv_max.Satuation = (int)slider.Value;
+
+            if (hsv_max.Satuation <= hsv_min.Satuation)
+            {
+                hsv_max.Satuation = hsv_min.Satuation + 1;
+                slider.Value = hsv_max.Satuation;
+            }
+
+            if(MAX_HSV_S!=null)
+                MAX_HSV_S.Content = (int)slider.Value;
         }
 
         private void hsv_max_value_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             var slider = sender as Slider;
             hsv_max.Value = (int)slider.Value;
+
+            if (hsv_max.Value <= hsv_min.Value)
+            {
+                hsv_max.Value = hsv_min.Value + 1;
+                slider.Value = hsv_max.Value;
+            }
+
             if(MAX_HSV_V!=null)
-            MAX_HSV_V.Content =(int) slider.Value;
+                MAX_HSV_V.Content =(int) slider.Value;
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            handColorTaken = true;
         }
 
 

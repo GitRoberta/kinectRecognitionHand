@@ -65,3 +65,26 @@ C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHan
 C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.Properties.Resources.resources
 C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csproj.GenerateResource.Cache
 C:\Users\Utente\Desktop\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csprojResolveAssemblyReference.cache
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\RecognitionHand.exe.config
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.exe
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.pdb
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\RecognitionHand.exe
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\RecognitionHand.pdb
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Emgu.CV.dll
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Emgu.CV.UI.dll
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Emgu.Util.dll
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Microsoft.Research.Kinect.dll
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Microsoft.Expression.Drawing.dll
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Coding4Fun.Kinect.Wpf.pdb
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\bin\Debug\Microsoft.Expression.Drawing.xml
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csprojResolveAssemblyReference.cache
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csproj.RecognitionHand.exe.config
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\MainWindow.g.cs
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\App.g.cs
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand_Content.g.cs
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand_MarkupCompile.cache
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand_MarkupCompile.lref
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\MainWindow.baml
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.g.resources
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.Properties.Resources.resources
+C:\Users\Chetoplez\Documents\Visual Studio 2015\Projects\RecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csproj.GenerateResource.Cache
