@@ -111,3 +111,6 @@ C:\Users\Chetoplez\Documents\kinectRecognitionHand\RecognitionHand\obj\Debug\Mai
 C:\Users\Chetoplez\Documents\kinectRecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.g.resources
 C:\Users\Chetoplez\Documents\kinectRecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.Properties.Resources.resources
 C:\Users\Chetoplez\Documents\kinectRecognitionHand\RecognitionHand\obj\Debug\RecognitionHand.csproj.GenerateResource.Cache
+C:\Users\Chetoplez\Documents\kinectRecognitionHand\RecognitionHand\bin\Debug\InputSimulator.dll
+C:\Users\Chetoplez\Documents\kinectRecognitionHand\RecognitionHand\bin\Debug\InputSimulator.pdb
+C:\Users\Chetoplez\Documents\kinectRecognitionHand\RecognitionHand\bin\Debug\InputSimulator.xml

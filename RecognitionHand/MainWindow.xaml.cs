@@ -41,14 +41,15 @@ namespace RecognitionHand
         private float previousFrameX = 0;
         private float fingerHeight = 5.5f;
 
-        private MouseController mouseController = new MouseController();
+        private MouseController mouseController = new MouseController(15);
         private int countAverage = 0;
 
         /* If true use ycbcr, else hsv */
         public bool useYCbCr = false;
         /* If we already get the color, dont do anything */
         private bool handColorTaken = false;
-        
+        private uint mouseX = 0, mouseY = 0;
+
         #region ImportRegion
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
         private static extern int DeleteObject(IntPtr o);
@@ -125,7 +126,7 @@ namespace RecognitionHand
             hsv_max_hue_slider.Value = hsv_max.Hue;
             hsv_max_saturation_slider.Value = hsv_max.Satuation;
             hsv_max_value_slider.Value = hsv_max.Value;
-
+            mouseController.ReleaseClick();
             box = new MCvBox2D();
             #endregion
         }
@@ -133,6 +134,7 @@ namespace RecognitionHand
         private void MainWindow_Closed(object sender, EventArgs e)
         {
             nui.Uninitialize();
+            mouseController.ReleaseClick();
         }
 
         private void Nui_skeleton_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
@@ -145,7 +147,7 @@ namespace RecognitionHand
         }
         
         private void calculateJointPosition(Joint joint) {
-            var scaledJoint = joint.ScaleTo((int)ScreenWidth, (int)ScreenHeight, 1, 1);
+            var scaledJoint = joint.ScaleTo((int)ScreenWidth, (int)ScreenHeight, 0.5f, 0.5f);
             int correctX = (int)scaledJoint.Position.X;
             int correctY = (int)scaledJoint.Position.Y;
             /* Map point and interpolate for a smoothing transition */
@@ -156,11 +158,14 @@ namespace RecognitionHand
             handPosition = new POINT((int)scaledJoint.Position.X, (int)scaledJoint.Position.Y);
             fattoreDiCorrezione = widhtHand / 2;
 
+            mouseX =(uint) x;
+            mouseY =(uint) y;
+
             /* Applying a little threshold... */
-            //if (Math.Abs(scaledJoint.Position.X - p.X) > 2.0f || Math.Abs(scaledJoint.Position.Y - p.Y) > 2.0f)
-            //{
-            // SetPositon(x, y);
-            //}
+            if ((Math.Abs(scaledJoint.Position.X - p.X) > 2.0f || Math.Abs(scaledJoint.Position.Y - p.Y) > 2.0f) && handColorTaken)
+            {
+                SetPositon(x, y);
+            }
         }
 
         private POINT calculateRelativeHandPosition(int resolutionX = 640, int resolutionY = 480) {
@@ -339,7 +344,8 @@ namespace RecognitionHand
             }
             #endregion
 
-            Console.WriteLine("Finger Number =" + fingerNum);
+            mouseController.AddNumber(fingerNum, mouseX, mouseY);
+           // Console.WriteLine("Detected Finger Number =" + fingerNum);
         }
 
         #endregion
@@ -440,7 +446,9 @@ namespace RecognitionHand
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            handColorTaken = true;
+            handColorTaken = !handColorTaken;
+            Button b = sender as Button;
+            b.Content = (handColorTaken) ? "Stop" : "Start";
         }
         
         #endregion
