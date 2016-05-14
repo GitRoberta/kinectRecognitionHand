@@ -12,16 +12,14 @@ namespace RecognitionHand
     class MouseController
     {
         //Control mouse
-        private int leftClick = 1;
-        private int rightClick = 2;
         private bool LMB_PRESSED = false;
         private bool RMB_PRESSED = false;
         private const int DELTA_TIME_PRESSED_SHORT = 60; //Number of frame for single click
         private const int DELTA_TIME_PRESSED_LONG = 90;  //Number of frame for long click
         private int countFrame = 0;
-        private int actualFingerNumber = 0;
         private int[] frameWindow;
         private int index = 0;
+        private int Threshold;
         private uint mouseX = 0, mouseY = 0;
         private bool DebugMode = false;
 
@@ -69,6 +67,7 @@ namespace RecognitionHand
             DebugMode = debug;
             previusX = (uint)startX;
             previusY = (uint)startY;
+            Threshold = (a / 3) * 2;
         }
 
         private void LeftClick()
@@ -76,6 +75,10 @@ namespace RecognitionHand
 
             //Console.WriteLine("LeftClick");
             countFrame += 15;
+            mouse_event(LMB_DOWN_CODE, mouseX, mouseY, 0, 0);
+            mouse_event(LMB_UP_CODE, mouseX, mouseY, 0, 0);
+
+            /*
             if (RMB_PRESSED)
             {
                 mouse_event(RMB_UP_CODE, mouseX, mouseY, 0, 0);
@@ -89,14 +92,19 @@ namespace RecognitionHand
                 mouse_event(LMB_DOWN_CODE, mouseX, mouseY, 0, 0);
                 LMB_PRESSED = true;
             }
-            //else
-            //    Console.WriteLine("LMB_STILL_DOWN");
+            */
+
         }
 
         private void RightClick()
         {
             //Console.WriteLine("RightClick");
             countFrame += 15;
+
+            mouse_event(RMB_DOWN_CODE, mouseX, mouseY, 0, 0);
+            mouse_event(RMB_UP_CODE, mouseX, mouseY, 0, 0);
+
+            /*
             if (LMB_PRESSED)
             {
                 mouse_event(LMB_UP_CODE, mouseX, mouseY, 0, 0);
@@ -110,8 +118,8 @@ namespace RecognitionHand
                 mouse_event(RMB_DOWN_CODE, mouseX, mouseY, 0, 0);
                 RMB_PRESSED = true;
             }
-            //else
-            //    Console.WriteLine("RMB_STILL_DOWN");
+            */
+
         }
 
         public void ReleaseClick()
@@ -138,19 +146,18 @@ namespace RecognitionHand
             if (DebugMode)
                 return;
 
-
-
-
             switch (fingerNumber)
             {
                 case 0:// Console.WriteLine("0 fingernumber windowed");
                     ReleaseClick();
                     break;
                 case 1: // Console.WriteLine("1 fingernumber windowed");
-                    ReleaseClick(); break;
+                    RightClick();
+                    break;
+
                 case 2: LeftClick(); break;
                 case 3:
-                    RightClick();
+                    ReleaseClick();
                     break;
                 case 4:// Console.WriteLine("4 fingernumber windowed");
                     ReleaseClick();
@@ -178,6 +185,7 @@ namespace RecognitionHand
         {
             int averageNumber = 0;
             int count = 0, previousCount = 0;
+            int finalCount = 0;
 
             for (int i = 0; i < 6; i++)
             {
@@ -191,15 +199,19 @@ namespace RecognitionHand
                 if (count > previousCount)
                 {
                     previousCount = count;
+                    finalCount = count;
                     averageNumber = i;
                 }
                 count = 0;
             }
 
+            Console.WriteLine("Average is: " + averageNumber + " Count:  " + finalCount);
+            if (finalCount < Threshold) averageNumber = 0;
+
             return averageNumber;
         }
 
-        public void AddNumber(int number, uint dx = 0, uint dy = 0)
+        public void AddNumber(int number)
         {
             int fingerNumber = 0;
             if (index < frameWindow.Length)
@@ -207,11 +219,11 @@ namespace RecognitionHand
                 frameWindow[index] = number;
                 index++;
             }
-            else {
+            else
+            {
                 fingerNumber = AverageFrameWindow();
                 index = 0;
-                mouseX = dx;
-                mouseY = dy;
+
                 Click(fingerNumber);
             }
         }
@@ -224,7 +236,7 @@ namespace RecognitionHand
             int deltaX = (int)(actualX - previusX);
             int deltaY = (int)(actualY - previusY);
 
-           
+
             SetMousePosition(deltaX, deltaY);
 
             previusX = actualX;
@@ -239,8 +251,8 @@ namespace RecognitionHand
             p.X += (int)(deltaX * SensitivityX);
             p.Y += (int)(deltaY * SensitivityY);
 
-            mouseX = (uint) p.X;
-            mouseY = (uint) p.Y;
+            mouseX = (uint)p.X;
+            mouseY = (uint)p.Y;
             SetCursorPos(p.X, p.Y);
         }
 

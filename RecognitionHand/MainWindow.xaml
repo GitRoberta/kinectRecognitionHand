@@ -39,12 +39,12 @@
         <Label x:Name="MIN_HSV_S" Content="0" HorizontalAlignment="Left" Margin="929,76,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.474,0.269"/>
         <Label x:Name="MAX_HSV_S" Content="0" HorizontalAlignment="Left" Margin="931,232,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.474,0.269"/>
         <Button x:Name="button" Content="START" HorizontalAlignment="Left" Margin="744,307,0,0" VerticalAlignment="Top" Width="203" Height="51" Click="button_Click"/>
-        <Slider x:Name="sliderSensitivityX" Minimum="0" Maximum="400" HorizontalAlignment="Left" Margin="748,556,0,0" VerticalAlignment="Top" ValueChanged="sliderSensitivityX_ValueChanged" Width="104"  />
-        <Label x:Name="label12" Content="Sensitivity X" HorizontalAlignment="Left" Margin="749,525,0,0" VerticalAlignment="Top"/>
+        <Slider x:Name="sliderSensitivityX" Minimum="400" Maximum="1000" HorizontalAlignment="Left" Margin="748,556,0,0" VerticalAlignment="Top" ValueChanged="sliderSensitivityX_ValueChanged" Width="104"  />
+        <Label x:Name="label12" Content="Sensitivity X(%)" HorizontalAlignment="Left" Margin="749,525,0,0" VerticalAlignment="Top"/>
         <Label x:Name="SensitivityX" Content="0" HorizontalAlignment="Left" Margin="845,525,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="label13" Content="Sensitivity Y" HorizontalAlignment="Left" Margin="748,601,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label13" Content="Sensitivity Y(%)" HorizontalAlignment="Left" Margin="748,601,0,0" VerticalAlignment="Top"/>
         <Label x:Name="SensitivityY" Content="0" HorizontalAlignment="Left" Margin="845,601,0,0" VerticalAlignment="Top"/>
-        <Slider x:Name="sliderSensitivityY" Width="104"  Minimum="0" Maximum="400" HorizontalAlignment="Left" Margin="748,632,0,0" VerticalAlignment="Top" ValueChanged="sliderSensitivityY_ValueChanged"/>
+        <Slider x:Name="sliderSensitivityY" Width="104"  Minimum="400" Maximum="1000" HorizontalAlignment="Left" Margin="748,632,0,0" VerticalAlignment="Top" ValueChanged="sliderSensitivityY_ValueChanged"/>
 
 
 

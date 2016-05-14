@@ -43,7 +43,7 @@ namespace RecognitionHand
         private float multiplierMouseX = 1f;
         private float multiplierMouseY = 1f;
 
-        private MouseController mouseController = new MouseController(15,true);
+        private MouseController mouseController = new MouseController(30,false);
         private int countAverage = 0;
 
         /* If true use ycbcr, else hsv */
@@ -134,8 +134,8 @@ namespace RecognitionHand
             hsv_max_saturation_slider.Value = hsv_max.Satuation;
             hsv_max_value_slider.Value = hsv_max.Value;
 
-            sliderSensitivityX.Value = 400;
-            sliderSensitivityY.Value = 400;
+            sliderSensitivityX.Value = 720;
+            sliderSensitivityY.Value = 800;
 
 
             mouseController.ReleaseClick();
@@ -487,6 +487,7 @@ namespace RecognitionHand
             if (mouseController != null)
                 mouseController.SensitivityX = multiplierMouseX/100;
 
+            if(SensitivityX!= null)
             SensitivityX.Content = multiplierMouseX.ToString();
         }
 
@@ -496,7 +497,9 @@ namespace RecognitionHand
             multiplierMouseY = (float)slider.Value;
             if (mouseController != null)
                 mouseController.SensitivityY = multiplierMouseY/100;
-            SensitivityY.Content = multiplierMouseY.ToString();
+
+            if (SensitivityY != null)
+                SensitivityY.Content = multiplierMouseY.ToString();
         }
 
         #endregion
