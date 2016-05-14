@@ -36,19 +36,21 @@ namespace RecognitionHand
         private Image<Gray, Byte> skin;
         private POINT handPosition = new POINT(0, 0);
         private int heightHand = 0, widhtHand = 0;
-        private int fattoreDiCorrezione = 0;
         private POINT result = new POINT(0, 0);
         private float previousFrameX = 0;
         private float fingerHeight = 5.5f;
 
-        private MouseController mouseController = new MouseController(15);
+        private float multiplierMouseX = 1f;
+        private float multiplierMouseY = 1f;
+
+        private MouseController mouseController = new MouseController(15,true);
         private int countAverage = 0;
 
         /* If true use ycbcr, else hsv */
         public bool useYCbCr = false;
         /* If we already get the color, dont do anything */
         private bool handColorTaken = false;
-        private uint mouseX = 0, mouseY = 0;
+       
 
         #region ImportRegion
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
@@ -76,6 +78,10 @@ namespace RecognitionHand
 
         private void SetPositon(int a, int b)
         {
+            if (a >= ScreenWidth)
+                a = (int)ScreenWidth;
+            if (b >= ScreenHeight)
+                b = (int)ScreenHeight;
             SetCursorPos(a, b);
         }
         #endregion
@@ -91,6 +97,7 @@ namespace RecognitionHand
         {
             heightHand = (int)imageConvexHull.Height;
             widhtHand = (int)imageConvexHull.Width;
+
             nui.Initialize(RuntimeOptions.UseColor | RuntimeOptions.UseSkeletalTracking);
             nui.VideoFrameReady += Nui_VideoFrameReady;
             nui.VideoStream.Open(ImageStreamType.Video, 2, ImageResolution.Resolution640x480, ImageType.Color);
@@ -126,6 +133,11 @@ namespace RecognitionHand
             hsv_max_hue_slider.Value = hsv_max.Hue;
             hsv_max_saturation_slider.Value = hsv_max.Satuation;
             hsv_max_value_slider.Value = hsv_max.Value;
+
+            sliderSensitivityX.Value = 400;
+            sliderSensitivityY.Value = 400;
+
+
             mouseController.ReleaseClick();
             box = new MCvBox2D();
             #endregion
@@ -147,47 +159,63 @@ namespace RecognitionHand
         }
         
         private void calculateJointPosition(Joint joint) {
-            var scaledJoint = joint.ScaleTo((int)ScreenWidth, (int)ScreenHeight, 0.5f, 0.5f);
+            var scaledJoint = joint.ScaleTo((int)ScreenWidth, (int)ScreenHeight, 1,1);
+            handPosition = new POINT((int)scaledJoint.Position.X, (int)scaledJoint.Position.Y);
+
             int correctX = (int)scaledJoint.Position.X;
             int correctY = (int)scaledJoint.Position.Y;
+
             /* Map point and interpolate for a smoothing transition */
             POINT p;
             GetCursorPos(out p);
             int x = (int)((correctX + p.X) / 2);
             int y = (int)((correctY + p.Y) / 2);
-            handPosition = new POINT((int)scaledJoint.Position.X, (int)scaledJoint.Position.Y);
-            fattoreDiCorrezione = widhtHand / 2;
 
-            mouseX =(uint) x;
-            mouseY =(uint) y;
 
-            /* Applying a little threshold... */
-            if ((Math.Abs(scaledJoint.Position.X - p.X) > 2.0f || Math.Abs(scaledJoint.Position.Y - p.Y) > 2.0f) && handColorTaken)
+            if (x < ScreenWidth / 2)
             {
-                SetPositon(x, y);
+                x = ((x - 200) > 0) ? x - 200 : 0;
             }
+            else {
+                x = ((x + 200) < ScreenWidth) ? x + 200 : (int) ScreenWidth;
+            }
+
+            if (y >= ScreenHeight / 2) {
+               y= ((y + 100) > 0) ? y + 100 : (int) ScreenHeight;
+            }
+            else {
+                y = ((y - 100) > 0) ? y - 100 : 0;
+            }
+            
+           
+            if(handColorTaken)
+                mouseController.MoveMouse(scaledJoint);
+
         }
 
         private POINT calculateRelativeHandPosition(int resolutionX = 640, int resolutionY = 480) {
-            result.X = (int)((handPosition.X * resolutionX) / ScreenWidth);
-            result.Y = (int)((handPosition.Y * resolutionY) / ScreenHeight);
-          
-            result.X = ((result.X - fattoreDiCorrezione > 0) && (result.X - fattoreDiCorrezione < resolutionX)) ? result.X - fattoreDiCorrezione : 0;
-            if (Math.Abs(result.X - previousFrameX) > 30 && previousFrameX !=0)
-                result.X =(int) previousFrameX;
-                if (result.Y <= resolutionY / 3)
+
+            int x= (int)((handPosition.X * resolutionX) / ScreenWidth);
+            int y= (int)((handPosition.Y * resolutionY) / ScreenHeight);
+
+            if (!(x + widhtHand > resolutionX || x - widhtHand < 0))
             {
-                fattoreDiCorrezione = 200;
+                /*  was before (int)((handPosition.X * resolutionX) / ScreenWidth)*/
+                result.X = x;
+                result.X = ((result.X - (widhtHand/2) > 0)) ? result.X - (widhtHand / 2) : 0;
+
+                /* Needs for avoiding frame flikering */
+                if (Math.Abs(result.X - previousFrameX) > 30 && previousFrameX != 0)
+                    result.X = (int)previousFrameX;
             }
-            else if (result.Y > (resolutionY / 3 * 2))
+
+            /* Cannot move if overflow happen */
+            if (!(y + heightHand > resolutionY || y - heightHand < 0))
             {
-                fattoreDiCorrezione = 100;
+                result.Y = y;
+                result.Y = ((result.Y - (heightHand/2) > 0)) ? result.Y - (heightHand / 2) : 0;
             }
-            else
-            {
-                fattoreDiCorrezione = 150;
-            }
-            result.Y = ((result.Y - fattoreDiCorrezione > 0) && (result.Y - fattoreDiCorrezione < resolutionY)) ? result.Y - fattoreDiCorrezione : 0;
+
             previousFrameX = result.X;
             return result;
         }
@@ -344,7 +372,7 @@ namespace RecognitionHand
             }
             #endregion
 
-            mouseController.AddNumber(fingerNum, mouseX, mouseY);
+            mouseController.AddNumber(fingerNum);
            // Console.WriteLine("Detected Finger Number =" + fingerNum);
         }
 
@@ -449,8 +477,28 @@ namespace RecognitionHand
             handColorTaken = !handColorTaken;
             Button b = sender as Button;
             b.Content = (handColorTaken) ? "Stop" : "Start";
+            SetPositon((int)ScreenWidth/2,(int)ScreenHeight/2);
         }
-        
+
+        private void sliderSensitivityX_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            var slider = sender as Slider;
+            multiplierMouseX = (float)slider.Value;
+            if (mouseController != null)
+                mouseController.SensitivityX = multiplierMouseX/100;
+
+            SensitivityX.Content = multiplierMouseX.ToString();
+        }
+
+        private void sliderSensitivityY_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            var slider = sender as Slider;
+            multiplierMouseY = (float)slider.Value;
+            if (mouseController != null)
+                mouseController.SensitivityY = multiplierMouseY/100;
+            SensitivityY.Content = multiplierMouseY.ToString();
+        }
+
         #endregion
 
         #region UsefulMethods
