@@ -114,8 +114,7 @@ namespace RecognitionHand
 
             #region HandRecognitionInit
             
-            //hsv_min = new Hsv(10, 45, 50);
-            //hsv_max = new Hsv(20, 255, 255);
+           
             YCrCb_min = new Ycc(0, 131, 80);
             YCrCb_max = new Ycc(255, 185, 135);
             //Parameter Test
@@ -137,6 +136,8 @@ namespace RecognitionHand
             sliderSensitivityX.Value = 720;
             sliderSensitivityY.Value = 800;
 
+            checkBox.IsChecked = true;
+            mouseController.OneShotMouse = true;
 
             mouseController.ReleaseClick();
             box = new MCvBox2D();
@@ -329,16 +330,6 @@ namespace RecognitionHand
         {
             int fingerNum = 0;
 
-            #region hull drawing
-            //for (int i = 0; i < filteredHull.Total; i++)
-            //{
-            //    PointF hullPoint = new PointF((float)filteredHull[i].X,
-            //                                  (float)filteredHull[i].Y);
-            //    CircleF hullCircle = new CircleF(hullPoint, 4);
-            //    currentFrame.Draw(hullCircle, new Bgr(Color.Aquamarine), 2);
-            //}
-            #endregion
-
             #region defects drawing
             for (int i = 0; i < defects.Total; i++)
             {
@@ -348,14 +339,10 @@ namespace RecognitionHand
                 PointF depthPoint = new PointF((float)defectArray[i].DepthPoint.X,
                                                 (float)defectArray[i].DepthPoint.Y);
 
-                //PointF endPoint = new PointF((float)defectArray[i].EndPoint.X,
-                //                                (float)defectArray[i].EndPoint.Y);
 
-                //LineSegment2D startDepthLine = new LineSegment2D(defectArray[i].StartPoint, defectArray[i].DepthPoint);
-                //LineSegment2D depthEndLine = new LineSegment2D(defectArray[i].DepthPoint, defectArray[i].EndPoint);
                 CircleF startCircle = new CircleF(startPoint, 5f);
                 CircleF depthCircle = new CircleF(depthPoint, 5f);
-                //CircleF endCircle = new CircleF(endPoint, 5f);
+                
 
                 //Custom heuristic based on some experiment, double check it before use ; 
                 if ((startCircle.Center.Y < box.center.Y || depthCircle.Center.Y < box.center.Y) && (startCircle.Center.Y < depthCircle.Center.Y) && (Math.Sqrt(Math.Pow(startCircle.Center.X - depthCircle.Center.X, 2) + Math.Pow(startCircle.Center.Y - depthCircle.Center.Y, 2)) > (box.size.Height / fingerHeight)))
@@ -365,15 +352,11 @@ namespace RecognitionHand
                         fingerNum++;                       
                     }
                 }
-                
-                // currentFrame.Draw(startCircle, new Bgr(System.Drawing.Color.Red), 2);
-                // currentFrame.Draw(depthCircle, new Bgr(System.Drawing.Color.Yellow), 5);
-                // currentFrame.Draw(endCircle, new Bgr(Color.Black), 4);
+              
             }
             #endregion
 
             mouseController.AddNumber(fingerNum);
-           // Console.WriteLine("Detected Finger Number =" + fingerNum);
         }
 
         #endregion
@@ -478,6 +461,9 @@ namespace RecognitionHand
             Button b = sender as Button;
             b.Content = (handColorTaken) ? "Stop" : "Start";
             SetPositon((int)ScreenWidth/2,(int)ScreenHeight/2);
+
+            if (handColorTaken)
+                this.WindowState = WindowState.Minimized;
         }
 
         private void sliderSensitivityX_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -515,6 +501,19 @@ namespace RecognitionHand
                     System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
                 DeleteObject(ptr);
                 return bitsrc;
+            }
+        }
+
+        private void checkBox_Checked(object sender, RoutedEventArgs e)
+        {
+            var checkbox = sender as CheckBox;
+            if (checkbox != null)
+            {
+                if (!handColorTaken)
+                {
+                    Console.WriteLine("bool =" + (bool)checkbox.IsChecked);
+                    mouseController.OneShotMouse =(bool) checkbox.IsChecked;
+                }
             }
         }
 

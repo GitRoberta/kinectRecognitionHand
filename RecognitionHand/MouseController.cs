@@ -23,6 +23,7 @@ namespace RecognitionHand
         private uint mouseX = 0, mouseY = 0;
         private bool DebugMode = false;
 
+        public bool OneShotMouse = true;
         public float SensitivityX = 1f;
         public float SensitivityY = 1f;
 
@@ -75,50 +76,56 @@ namespace RecognitionHand
 
             //Console.WriteLine("LeftClick");
             countFrame += 15;
-            mouse_event(LMB_DOWN_CODE, mouseX, mouseY, 0, 0);
-            mouse_event(LMB_UP_CODE, mouseX, mouseY, 0, 0);
 
-            /*
-            if (RMB_PRESSED)
+            if(OneShotMouse)
             {
-                mouse_event(RMB_UP_CODE, mouseX, mouseY, 0, 0);
-                //Console.WriteLine("RMB_UP");
-                RMB_PRESSED = false;
-            }
-
-            if (!LMB_PRESSED)
-            {
-                //Console.WriteLine("LMB_DOWN");
                 mouse_event(LMB_DOWN_CODE, mouseX, mouseY, 0, 0);
-                LMB_PRESSED = true;
+             mouse_event(LMB_UP_CODE, mouseX, mouseY, 0, 0);
             }
-            */
+            else
+            {
+                if (RMB_PRESSED)
+                {
+                    mouse_event(RMB_UP_CODE, mouseX, mouseY, 0, 0);
+                    RMB_PRESSED = false;
+                }
 
+                if (!LMB_PRESSED)
+                {
+                    mouse_event(LMB_DOWN_CODE, mouseX, mouseY, 0, 0);
+                    LMB_PRESSED = true;
+                }
+            }
+          
         }
 
         private void RightClick()
         {
             //Console.WriteLine("RightClick");
             countFrame += 15;
-
-            mouse_event(RMB_DOWN_CODE, mouseX, mouseY, 0, 0);
-            mouse_event(RMB_UP_CODE, mouseX, mouseY, 0, 0);
-
-            /*
-            if (LMB_PRESSED)
-            {
-                mouse_event(LMB_UP_CODE, mouseX, mouseY, 0, 0);
-                //Console.WriteLine("LMB_UP");
-                LMB_PRESSED = false;
-            }
-
-            if (!RMB_PRESSED)
-            {
-                //Console.WriteLine("RMB_DOWN");
+            if(OneShotMouse)
+            { 
                 mouse_event(RMB_DOWN_CODE, mouseX, mouseY, 0, 0);
-                RMB_PRESSED = true;
+                mouse_event(RMB_UP_CODE, mouseX, mouseY, 0, 0);
+            }   
+            else
+            {
+                
+                if (LMB_PRESSED)
+                {
+                    mouse_event(LMB_UP_CODE, mouseX, mouseY, 0, 0);
+                    //Console.WriteLine("LMB_UP");
+                    LMB_PRESSED = false;
+                }
+
+                if (!RMB_PRESSED)
+                {
+                    //Console.WriteLine("RMB_DOWN");
+                    mouse_event(RMB_DOWN_CODE, mouseX, mouseY, 0, 0);
+                    RMB_PRESSED = true;
+                }
+               
             }
-            */
 
         }
 
